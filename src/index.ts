@@ -7,18 +7,28 @@ import { CrearSalaArgs, UnirseASalaArgs } from './interfaces/crearSala';
 const app = express();
 const server = createServer(app)
 const io = new Server(server, { cors: { origin: "*" } }) //se puede conectar a nuestro servidor desde cualquier origen
+global.io = io
 
 server.listen(3000, () => {
     console.log('Server escuchando en el puerto 3000');
 })
 
-const salas: Sala[] = []
+let salas: Sala[] = []
 let idProximaSala = 0
 
 io.on("connection", (socket) => {//cliente llama a socket.connect() desde el frontend, Socket.IO del servidor automáticamente emite un evento "connection"
     console.log("Nueva conexion");
     socket.on("encontrarSala", (callback) => buscarSalaPublica(callback))
     socket.on("crearSala", (args, callback) => crearSala(socket, callback, args))
+    socket.on("unirseASala", (args, callback) => unirseASala(socket, callback, args))
+    socket.on("disconnecting", () => {
+        if (socket.rooms.size < 2) return         //contiene info del socket id 
+        const salaJugador = salas.find(sala => sala.id == parseInt([...socket.rooms][1].substring(5))) //socket.rooms devuelve un objeto Set
+        if(!salaJugador) return
+        salaJugador.jugarAbandono()
+        socket.conn.close()
+        salas = salas.filter(sala => sala.id !== salaJugador.id)        
+    })
 })
 
 function buscarSalaPublica(callback: Function) {
