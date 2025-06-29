@@ -22,12 +22,16 @@ io.on("connection", (socket) => {//cliente llama a socket.connect() desde el fro
     socket.on("crearSala", (args, callback) => crearSala(socket, callback, args))
     socket.on("unirseASala", (args, callback) => unirseASala(socket, callback, args))
     socket.on("disconnecting", () => {
-        if (socket.rooms.size < 2) return         //contiene info del socket id 
-        const salaJugador = salas.find(sala => sala.id == parseInt([...socket.rooms][1].substring(5))) //socket.rooms devuelve un objeto Set
-        if(!salaJugador) return
-        salaJugador.jugarAbandono()
+        if (socket.rooms.size < 2) return        //contiene info del socket id 
+        const salaJugador = salas.find(sala => sala.id == parseInt([...socket.rooms][1].substring(5))); //socket.rooms devuelve un objeto Set
+        if (!salaJugador) return
+        salaJugador?.jugadorAbandono()
         socket.conn.close()
-        salas = salas.filter(sala => sala.id !== salaJugador.id)        
+        salas = salas.filter(sala => sala.id !== salaJugador.id)
+    });
+    socket.on("jugar", (args) => {
+        console.log("Viendo de registrar una jugada", args, buscarSala(args.salaId))
+        buscarSala(args.salaId)?.jugar(args.jugador, args.posicion)
     })
 })
 
@@ -62,5 +66,9 @@ function unirseASala(socket: Socket, callback: Function, args: UnirseASalaArgs) 
     salas[salaIndex].agregarJugador(args.nombreJugador)
     socket.join("sala-" + salas[salaIndex].id)
     return callback({ exito: true, mensaje: "Unido a la sala " + salas[salaIndex].id, sala: salas[salaIndex].getSala() })
+}
+
+function buscarSala(id: number) {
+    return salas.find(sala => sala.id === id)
 }
 
