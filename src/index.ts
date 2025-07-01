@@ -33,6 +33,10 @@ io.on("connection", (socket) => {//cliente llama a socket.connect() desde el fro
         console.log("Viendo de registrar una jugada", args, buscarSala(args.salaId))
         buscarSala(args.salaId)?.jugar(args.jugador, args.posicion)
     })
+    socket.on("nuevaRonda",(args)=> {
+    console.log("Viendo de empezar una nueva ronda",args, buscarSala(args.salaId))
+    buscarSala(args.salaId)?.nuevaRonda();
+  })
 })
 
 function buscarSalaPublica(callback: Function) {
