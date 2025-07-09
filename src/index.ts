@@ -17,7 +17,7 @@ let salas: Sala[] = []
 let idProximaSala = 0
 
 io.on("connection", (socket) => {//cliente llama a socket.connect() desde el frontend, Socket.IO del servidor automáticamente emite un evento "connection"
-    console.log("Nueva conexion");
+    //console.log("Nueva conexion");
     socket.on("encontrarSala", (callback) => buscarSalaPublica(callback))
     socket.on("crearSala", (args, callback) => crearSala(socket, callback, args))
     socket.on("unirseASala", (args, callback) => unirseASala(socket, callback, args))
@@ -30,11 +30,11 @@ io.on("connection", (socket) => {//cliente llama a socket.connect() desde el fro
         salas = salas.filter(sala => sala.id !== salaJugador.id)
     });
     socket.on("jugar", (args) => {
-        console.log("Viendo de registrar una jugada", args, buscarSala(args.salaId))
+        //console.log("Viendo de registrar una jugada", args, buscarSala(args.salaId))
         buscarSala(args.salaId)?.jugar(args.jugador, args.posicion)
     })
     socket.on("nuevaRonda",(args)=> {
-    console.log("Viendo de empezar una nueva ronda",args, buscarSala(args.salaId))
+    //console.log("Viendo de empezar una nueva ronda",args, buscarSala(args.salaId))
     buscarSala(args.salaId)?.nuevaRonda();
   })
 })
