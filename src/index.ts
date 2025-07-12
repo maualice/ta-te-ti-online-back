@@ -3,14 +3,16 @@ import { createServer } from 'node:http'
 import { Server, Socket } from 'socket.io'
 import { Sala } from './clases/sala';
 import { CrearSalaArgs, UnirseASalaArgs } from './interfaces/crearSala';
+import { config } from 'dotenv';
 
 const app = express();
 const server = createServer(app)
 const io = new Server(server, { cors: { origin: "*" } }) //se puede conectar a nuestro servidor desde cualquier origen
 global.io = io
+config()
 
-server.listen(3000, () => {
-    console.log('Server escuchando en el puerto 3000');
+server.listen(process.env.PORT || 3000, () => {
+    console.log('Server escuchando en el puerto ', process.env.PORT);
 })
 
 let salas: Sala[] = []
@@ -33,10 +35,10 @@ io.on("connection", (socket) => {//cliente llama a socket.connect() desde el fro
         //console.log("Viendo de registrar una jugada", args, buscarSala(args.salaId))
         buscarSala(args.salaId)?.jugar(args.jugador, args.posicion)
     })
-    socket.on("nuevaRonda",(args)=> {
-    //console.log("Viendo de empezar una nueva ronda",args, buscarSala(args.salaId))
-    buscarSala(args.salaId)?.nuevaRonda();
-  })
+    socket.on("nuevaRonda", (args) => {
+        //console.log("Viendo de empezar una nueva ronda",args, buscarSala(args.salaId))
+        buscarSala(args.salaId)?.nuevaRonda();
+    })
 })
 
 function buscarSalaPublica(callback: Function) {
