@@ -4,12 +4,23 @@ import { Server, Socket } from 'socket.io'
 import { Sala } from './clases/sala';
 import { CrearSalaArgs, UnirseASalaArgs } from './interfaces/crearSala';
 import { config } from 'dotenv';
+import cors from 'cors';
+
 
 const app = express();
+const allowedOrigins = [
+    'https://ta-te-ti-front.netlify.app',
+    'http://localhost:3000', // para desarrollo local
+];
 const server = createServer(app)
-const io = new Server(server, { cors: { origin: "*" } }) //se puede conectar a nuestro servidor desde cualquier origen
+const io = new Server(server, { cors: { origin: allowedOrigins } })
 global.io = io
 config()
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
 
 server.listen(process.env.PORT || 3000, () => {
     console.log('Server escuchando en el puerto ', process.env.PORT);
