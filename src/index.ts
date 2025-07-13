@@ -10,10 +10,10 @@ import cors from 'cors';
 const app = express();
 const allowedOrigins = [
     'https://ta-te-ti-front.netlify.app',
-    'http://localhost:3000', // para desarrollo local
+    'localhost:3000', // para desarrollo local
 ];
 const server = createServer(app)
-const io = new Server(server, { cors: { origin: allowedOrigins } })
+const io = new Server(server, { cors: { origin: '*' } })
 global.io = io
 config()
 
@@ -23,7 +23,7 @@ app.use(cors({
 }));
 
 server.listen(process.env.PORT || 3000, () => {
-    console.log('Server escuchando en el puerto ', process.env.PORT);
+    console.log('Server escuchando en el puerto', process.env.PORT);
 })
 
 let salas: Sala[] = []
